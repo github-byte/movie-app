@@ -1,0 +1,43 @@
+.header{
+    display: flex;
+    height:59px;
+    justify-content: space-between;
+    padding-top: 20px;
+    margin-left: 59px;
+    margin-right:40px;
+    color: white !important;
+    text-decoration: none !important;
+
+}
+
+.logo{
+    height:90%;
+    display: flex;
+    color: white !important;
+    text-decoration: none !important;
+}
+
+.logo> img{
+    height:30px;
+}
+
+.header-links{
+    color:white;
+    display: flex;
+}
+
+.header-link>a{
+    padding-left:20px;
+    float:left;
+    color: white !important;
+    text-decoration: none !important;
+    
+}
+
+.input-text{
+    color: white !important;
+    background-color: black;
+    text-decoration: none;
+    box-shadow: none;
+    border: 1px solid grey;
+}

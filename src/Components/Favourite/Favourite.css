@@ -1,0 +1,29 @@
+.fav-img>img {
+    height: 300px;
+    width:300px;
+}
+
+.fav-head{
+    color:white;
+    padding: 3%;
+}
+.movie-card{
+display: flex !important;
+flex-wrap: wrap;
+padding: 5%;
+}
+.fav-card{
+    display: block !important;
+    padding:3%;
+}
+
+.fav-text{
+    background-color: rgb(47, 54, 64);
+    padding-left:0% ;
+    height:50px
+}
+
+.my-button{
+    margin-left: 20%;
+    margin-top: 3%;
+}

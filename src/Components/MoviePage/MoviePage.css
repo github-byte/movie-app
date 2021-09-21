@@ -1,0 +1,39 @@
+.movie-page{
+    height:calc(100vh-50px)l
+}
+
+
+.movie-poster>img{
+ width:100%;
+height:100%;
+object-fit: contain !important;
+opacity: 0.4;
+}
+
+
+.movie-poster{
+    height:100%;
+    width:100%;
+}
+.movie-page-details{
+    position: absolute;
+    top:60px;
+    color:white;
+    padding:50px;
+}
+.movie-title-info>h1{
+    
+    font-weight: 900 !important;
+}
+
+
+.ytp-chrome-top-buttons {
+    display: none;
+}
+
+iframe{
+    width:100%;
+
+}
+
+
