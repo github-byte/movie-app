@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const favSchema = new Schema({
-  id:String,
+  movid:String,
   tvid:String,
-  add:String
+  add:String,
+  name:String
 }, {
   timestamps: true,
 });

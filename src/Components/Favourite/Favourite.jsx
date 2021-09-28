@@ -9,14 +9,15 @@ class Favourite extends Component {
         watchlist:[],
         movieInfo:[],
         movieImg:[],
-        movieTitle:[]
+        movieTitle:[],
+        name:''
     }
 
     async componentDidMount(){
        let data= await axios.get('http://localhost:4000/fav/')
 
       .then(response => {
-        console.log(response.data);
+        console.log('res: ',response.data);
         
         this.setState({watchlist:response.data})
       })
@@ -27,10 +28,11 @@ class Favourite extends Component {
 
 
       this.state.watchlist.map(async(e) =>{
-        if(e.id){
-          let req=await axios.get(`${API_URL}/movie/${e.id}?api_key=${API_KEY}`) 
+        console.log('e ',e)
+        if(e.movid!==' '){
+          let req=await axios.get(`${API_URL}/movie/${e.movid}?api_key=${API_KEY}`) 
          
-          console.log(e.id)
+          console.log(e.movid)
           console.log(req.data.length);
           let img=IMAGE_URL+req.data.poster_path;
           this.setState({movieInfo:[...this.state.movieInfo,req.data]})
@@ -38,38 +40,60 @@ class Favourite extends Component {
           await this.setState({movieTitle:[...this.state.movieTitle,req.data.title]})
 
         }
-        else if(e.tvid){
-          let req=await axios.get(`${API_URL}discover/tv/${e.tvid}?api_key=${API_KEY}&with_networks=213`)
-          console.log(req)
+        else{
+          // https://api.themoviedb.org/3/tv/63174/videos?api_key=d8af0c11dd67d6349c48da4ffc70b8b0&language=en-US
+          let req=await axios.get(`${API_URL}/tv/${e.tvid}?api_key=${API_KEY}`)
+          console.log('req',req)
           let img=IMAGE_URL+req.data.poster_path;
           this.setState({movieInfo:[...this.state.movieInfo,req.data]})
         }
-        console.log(e);
+        console.log("respose ",e);
     })
     
     
 
+  
+    
 
     }
 
-    delete=async(id)=>{
-      let mainId=''
-      
-      this.state.watchlist.map((watch)=>{
-        if(watch.id==id) {
-          mainId=watch._id
-  
-        };
-      })
+    // delete=async(id)=>{
+    //   let mainId=''
+    //   console.log('dele ',this.state.watchlist)
+    //   this.state.watchlist.map((watch)=>{
+       
+    //     if(watch.movid!==' '){
+    //       mainId=watch.movid
+    //     }
+    //     else if(watch.tvid!==' '){
+    //       mainId=watch.tvid
+    //     }
+    //   })
     
+      
+      
+    // }
+   
+    
+    findMovie=async(name)=>{
+      let mainId='';
+      let id='';
+
+    
+
+      this.state.watchlist.map(e=>{
+        if(e.name===name){
+          mainId=e._id;
+          id=e.tvid||e.movid;
+        }
+      })
+      
       await axios.delete('http://localhost:4000/fav/'+mainId).then(res=>console.log(res)).catch(err=>console.log(err))
       let arr=this.state.movieInfo.filter((movie)=>{if(movie.id!=id)return true})
       this.setState({movieInfo:arr})
 
+
     }
-    
-    
-   
     
     
     
@@ -91,7 +115,10 @@ class Favourite extends Component {
                 <img src={IMAGE_URL+movie.poster_path} alt="img"/>   
              </div>
              <div className="fav-text">
-             <button className="btn btn-dark my-button" onClick={(e)=>{this.delete(movie.id)}}>
+             <button className="btn btn-dark my-button" onClick={(e)=>{
+              //  await this.setState({name:});
+                this.findMovie(movie.title||movie.name)
+            }}>
                 Remove from list
                 </button>
             </div> 

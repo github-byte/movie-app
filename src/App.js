@@ -81,7 +81,7 @@ class App extends Component {
   }
 
   nextPage=async()=>{
-    let data = await axios.get(API_URL , {
+    let data = await axios.get(API_URL+'search/movie', {
       params: { api_key: API_KEY, page: this.state.currPage+1, query: this.state.currMovie },
     });  
    
@@ -109,11 +109,14 @@ class App extends Component {
       {(this.state.movieData.length)?
       (<React.Fragment>
       <Movies movies={this.state.movieData}></Movies>
-        <Pagination pages={this.state.pages.slice(0,5)} currPage={this.state.currPage}  
+      {console.log('pages',this.state.currPage)}
+        <Pagination pages={this.state.pages.length>5?this.state.pages.slice(this.state.currPage-1,this.state.currPage+4):this.state.pages} currPage={this.state.currPage}  
         setPage={this.setPage}
         prevPage={this.prevPage}
         nextPage={this.nextPage}
-        ></Pagination>
+        >
+
+        </Pagination>
       </React.Fragment>):(<div style={{ color:'white',marginTop: '10%',textAlign:'center'}}>Looks like there aren't great matches for your search</div>)}
       </Route>
 

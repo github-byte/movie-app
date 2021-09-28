@@ -23,6 +23,7 @@ app.use(express.json());
 
 const favRouter = require('./fav.router');
 const searchRouter = require('./search.router');
+
 app.use('/fav', favRouter);
 app.use('/search', searchRouter);
 

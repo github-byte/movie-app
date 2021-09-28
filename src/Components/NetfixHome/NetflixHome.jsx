@@ -35,7 +35,8 @@ state={
     watchlist:{},
     watch:false,
     dbId:[{}],
-    tvInfo:''
+    tvInfo:'',
+    vidObj:{}
 }
 //
 
@@ -48,7 +49,7 @@ async componentDidMount(){
        
 
        await axios.get("http://localhost:4000/fav").then((response)=>this.setState({dbId:response.data})).catch(err=>console.log(err))
-
+       
 
         //https://api.themoviedb.org/3/movie/popular?api_key=d8af0c11dd67d6349c48da4ffc70b8b0&language=en-US&page=1
         let popular=await axios.get(`${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=1`)
@@ -72,7 +73,7 @@ async componentDidMount(){
         //https://api.themoviedb.org/3/watch/providers/tv?api_key=d8af0c11dd67d6349c48da4ffc70b8b0&language=en-US
 
                //https://api.themoviedb.org/3/trending/all/day?api_key=d8af0c11dd67d6349c48da4ffc70b8b0
-               let trending=await axios.get(`${API_URL}trending/all/day?api_key=${API_KEY}`)
+            let trending=await axios.get(`${API_URL}trending/all/day?api_key=${API_KEY}`)
             let trend=trending.data.results
             let tend=trending.data.results[0]
             let now=trending.data.results[0]
@@ -93,121 +94,129 @@ async componentDidMount(){
               //https://api.themoviedb.org/3/tv/123190/watch/providers?api_key=d8af0c11dd67d6349c48da4ffc70b8b0
               
             //https://api.themoviedb.org/3/tv/60625/external_ids?api_key=d8af0c11dd67d6349c48da4ffc70b8b0&language=en-US
+
+
+ 
+    
  
 }
 
-    async componentDidUpdate(){
-     
-        
+    async playVideo(){
         if(!this.state.currId && this.state.currTvid){
           
-            let req=await axios.get(`${API_URL}tv/${this.state.currTvid}/videos?api_key=${API_KEY}&language=en-US`);
-           
-            let videoObj=req.data.results; 
-            let v=await videoObj.filter(function(video){
-                if(video.type==="Trailer" && video.site==='YouTube'){
-                    return true;
-                }
-                else return false;
-            })
-    
-            await this.setState({videoObj:v[0]})
-    
-    
-                }
-        else{
-               let req=await axios.get(`${API_URL}/movie/${this.state.currId}/videos?api_key=${API_KEY}&language=en-US`);
-        let videoObj=req.data.results;
-            let v=await videoObj.filter(function(video){
-                if(video.type==="Trailer" && video.site==='YouTube'){
-                    return true;
-                }
-                else return false;
-            })
-    
-            await this.setState({videoObj:v[0]})
-    
-            
-    
-
-        }    
-        
-
-
-           
-     
-          
-
-
-    }
-
-
-
-
-        toggleModal=()=>{
-            this.setState({isModalOpen:!(this.state.isModalOpen)})
-        
-    }
-    
-    sayTrue=()=>{
-        let arr=[];
-
-        this.state.dbId.map(db=>{
-            arr.push(db.id);
-        })
-
-        for(let x in arr){
-        
-            if(arr[x]==this.state.currId || this.state.watchlist.id==this.state.currId){
-                    return true;
-                }
-            
-                
+            await axios.get(`${API_URL}tv/${this.state.currTvid}/videos?api_key=${API_KEY}&language=en-US`)
+            .then(res=>{
+                const {data}=res;
+                this.setState({vidObj:data})
+                console.log('res1',data)
             }
+               ).catch(e=>console.log(e));
+           
+            let videoObj=this.state.vidObj.results; 
+            let v=await videoObj.filter(function(video){
+                if(video.type==="Trailer" && video.site==='YouTube'){
+                    return true;
+                }
+                else return false;
+            })
+    
+            await this.setState({videoObj:v[0]})
+    
+    
+                }
+            else if(this.state.currId&& !this.state.currTvId){
+               await axios.get(`${API_URL}movie/${this.state.currId}/videos?api_key=${API_KEY}&language=en-US`)
+               .then(res=>{const {data={}}=res
+                this.setState({vidObj:data})
+                    }
+            ).catch(e=>console.log(e));
+               let vObj=this.state.vidObj.results
+               let v=await (vObj)&&vObj.filter(function(video){
+                if(video.type==="Trailer" && video.site==='YouTube'){
+                    return true;
+                }
+                else return false;
+            })
+            
+            await (vObj)&&this.setState({videoObj:v[0]})
+    
+            
+    
 
-            
-            return false;
-            
+                }    
+        
        
     }
 
 
+
+
+    toggleModal=()=>{
+            this.setState({isModalOpen:!(this.state.isModalOpen)})
+
+    }
+
+    sayTrue=()=>{
+        
+        let state=false;
+            this.state.dbId.map(e=>{
+                if(this.state.currMovie==e.name||e.name==this.state.currTv){
+                    state=true;
+                
+                }
+            })
+        
+
+            
+            return state;
+            
+       
+    }
+
+    
+   //if already in db don't add
+   //
     sendRequest=async()=>{
-      
-        if(!this.sayTrue()){
+      let ans=await this.sayTrue();
+      console.log('ans: ',ans)
+        if(!ans){
          
                 let obj={}
-                console.log(this.state.currId)
+                console.log('movid',this.state.currTv)
                 if(this.state.currId){
                     obj={
-                        id:this.state.currId,
+                        movid:this.state.currId,
+                        name:this.state.currMovie,
                         tvid:'',
                         add:true
                     }
                 }
                 else{
                     obj={
-                        id:" ",
+                        movid:" ",
+                        name:this.state.currTv,
                         tvid:this.state.currTvid,
                         add:true
                     }
 
                 }
-
-                this.setState({watchlist:obj});
-    
+                
+                await (this.state.watchlist)&&this.setState({watchlist:obj});
+                
+                console.log('watch',this.state.watchlist)
         //if prev if id matches current id then set add to false
-        console.log(this.state.watchlist)                                                             //if id in db set add to false
+        //if id in db set add to false
     
-        await axios.post('http://localhost:4000/fav/add',this.state.watchlist).then(res => console.log(res.data)).catch(err=>console.log(err));
-
+       
+        await (this.state.watchlist)&&axios.post('http://localhost:4000/fav/add',this.state.watchlist).then(res => console.log(res.data)).catch(err=>console.log(err));
+    
         }
         else{
             //delete from db
             let id=''
             this.state.dbId.map((e)=>
                 {
-                if(e.id==this.state.currId){
+                if(e.movid==this.state.currId||e.tvid==this.state.currId){
                        id=e._id
                 }
             })
@@ -222,29 +231,12 @@ async componentDidMount(){
 
 
 
-
+    
 
 
     render() {
 
-        const responsive = {
-            desktop: {
-                breakpoint: { max: 3000, min: 1024 },
-                items: 3,
-                slidesToSlide: 3 // optional, default to 1.
-              },
-              tablet: {
-                breakpoint: { max: 1024, min: 464 },
-                items: 2,
-                slidesToSlide: 2 // optional, default to 1.
-              },
-              mobile: {
-                breakpoint: { max: 464, min: 0 },
-                items: 1,
-                slidesToSlide: 1 // optional, default to 1.
-              }
-          };
-
+     
      const opts = {
         height: '290',
         width: '100',
@@ -263,7 +255,7 @@ async componentDidMount(){
 
             
                 <div  className="movie-title">
-            <h1 >{this.state.tvInfo.name}</h1>
+                 <h1 >{this.state.tvInfo.name}</h1>
                 </div>
                 <div className="button">
                 <button className="play">Play</button>
@@ -281,22 +273,27 @@ async componentDidMount(){
             { (this.state.isModalOpen)&&<Modal  isOpen={this.state.isModalOpen}  toggle={this.toggleModal}>
             <ModalBody style={{backgroundImage:`url(${IMAGE_URL}/${this.state.currImg})`}}>
             <ModalHeader toggle={this.toggleModal}>{this.state.currMovie?this.state.currMovie:this.state.currTv}</ModalHeader>
-        
-            <button className="play" style={{float:'right'}} onClick={()=>{this.sendRequest()}}> 
+           
+            {/* {console.log('db',this.state.dbId.name==(this.state.currMovie||this.state.currTv))} */}
+            <button className="play" style={{float:'right'}} onClick={()=>{this.sendRequest(); 
+            
+            }}> 
 
                 {/* //display----> 3 condition
                 //already in database  ---> remove  (get request)
                 //prev state is true----->remove(keep track of prev state of watchlist)
-                //not in db and prev state is false===> add to watchlist */}
+            //not in db and prev state is false===> add to watchlist */}
            
             {(this.sayTrue())?<div><i class="fas fa-check-circle"></i>Remove from WatchList</div>:<div><i class="far fa-check-circle"></i>WatchList</div>}
+            
+             {/* WatchList */}
+            </button>
    
                 
-            </button>
           
             <div className="modal-story" >
             <div className="modal-video">
-         
+             {this.playVideo}
             {(this.state.videoObj)&&<YouTube videoId={this.state.videoObj.key} opts={opts} />}
             </div>
             <div  className="modal-info">
