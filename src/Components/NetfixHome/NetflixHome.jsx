@@ -48,8 +48,7 @@ async componentDidMount(){
     // let img=IMAGE_URL+use.poster_path;
        
 
-       await axios.get("http://localhost:4000/fav").then((response)=>this.setState({dbId:response.data})).catch(err=>console.log(err))
-       
+      
 
         //https://api.themoviedb.org/3/movie/popular?api_key=d8af0c11dd67d6349c48da4ffc70b8b0&language=en-US&page=1
         let popular=await axios.get(`${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=1`)
@@ -98,61 +97,68 @@ async componentDidMount(){
 
  
     
- 
+            console.log("hee");
+       
 }
 
     async playVideo(){
+        console.log('tc',this.state.currTvid)
         if(!this.state.currId && this.state.currTvid){
+         
+              let req=await axios.get(`${API_URL}tv/${this.state.currTvid}/videos?api_key=${API_KEY}&language=en-US`)
+              
+              this.setState({vidObj:req.data})
+            
+              this.setState({videoObj:this.state.vidObj.results}); 
+              let v=await this.state.videoObj.filter(function(video){
+                  if(video.type==="Trailer" && video.site==='YouTube'){
+                      return true;
+                  }
+                  else return false;
+              })
+      
+              await this.setState({videoObj:v[0]})
+              
+              
+      
+                  }
+          else if(this.state.currId && !this.state.currTvid){
+              // https://api.themoviedb.org/3/
+      
+              let req=await axios.get(`${API_URL}movie/${this.state.currId}/videos?api_key=${API_KEY}&language=en-US`)
+              
+              this.setState({vidObj:req.data})
+            
+              this.setState({videoObj:this.state.vidObj.results}); 
+              let v=await this.state.videoObj.filter(function(video){
+                  if(video.type==="Trailer" && video.site==='YouTube'){
+                      return true;
+                  }
+                  else return false;
+              })
+      
           
-            await axios.get(`${API_URL}tv/${this.state.currTvid}/videos?api_key=${API_KEY}&language=en-US`)
-            .then(res=>{
-                const {data}=res;
-                this.setState({vidObj:data})
-                console.log('res1',data)
-            }
-               ).catch(e=>console.log(e));
-           
-            let videoObj=this.state.vidObj.results; 
-            let v=await videoObj.filter(function(video){
-                if(video.type==="Trailer" && video.site==='YouTube'){
-                    return true;
-                }
-                else return false;
-            })
-    
-            await this.setState({videoObj:v[0]})
-    
-    
-                }
-            else if(this.state.currId&& !this.state.currTvId){
-               await axios.get(`${API_URL}movie/${this.state.currId}/videos?api_key=${API_KEY}&language=en-US`)
-               .then(res=>{const {data={}}=res
-                this.setState({vidObj:data})
-                    }
-            ).catch(e=>console.log(e));
-               let vObj=this.state.vidObj.results
-               let v=await (vObj)&&vObj.filter(function(video){
-                if(video.type==="Trailer" && video.site==='YouTube'){
-                    return true;
-                }
-                else return false;
-            })
-            
-            await (vObj)&&this.setState({videoObj:v[0]})
-    
-            
-    
+             await this.setState({videoObj:v[0]})
+  
+  
+              }   
 
-                }    
         
+       
+    }
+
+    async componentDidUpdate(){
+      await axios.get("http://localhost:4000/fav").then((response)=>this.setState({dbId:response.data})).catch(err=>console.log(err))
        
     }
 
 
 
 
-    toggleModal=()=>{
-            this.setState({isModalOpen:!(this.state.isModalOpen)})
+
+    toggleModal=async()=>{
+     
+        await this.setState({isModalOpen:!(this.state.isModalOpen)});
 
     }
 
@@ -173,9 +179,7 @@ async componentDidMount(){
        
     }
 
-    
-   //if already in db don't add
-   //
+
     sendRequest=async()=>{
       let ans=await this.sayTrue();
       console.log('ans: ',ans)
@@ -204,12 +208,15 @@ async componentDidMount(){
                 await (this.state.watchlist)&&this.setState({watchlist:obj});
                 
                 console.log('watch',this.state.watchlist)
+   
+   
+   
         //if prev if id matches current id then set add to false
         //if id in db set add to false
     
        
-        await (this.state.watchlist)&&axios.post('http://localhost:4000/fav/add',this.state.watchlist).then(res => console.log(res.data)).catch(err=>console.log(err));
-    
+        await (this.state.watchlist)&&axios.post('http://localhost:4000/fav/add',this.state.watchlist).then(res => console.log(res.data)).then(()=>{this.sayTrue()}).catch(err=>console.log(err));
+        
         }
         else{
             //delete from db
@@ -235,7 +242,24 @@ async componentDidMount(){
 
 
     render() {
-
+    const responsive = {
+    superLargeDesktop: {
+        breakpoint: { max: 4000, min: 3000 },
+        items: 5,
+    },
+    desktop: {
+        breakpoint: { max: 3000, min: 1024 },
+        items: 3,
+    },
+    tablet: {
+        breakpoint: { max: 1024, min: 464 },
+        items: 2,
+    },
+    mobile: {
+        breakpoint: { max: 464, min: 0 },
+        items: 1,
+    },
+};
      
      const opts = {
         height: '290',
@@ -249,13 +273,12 @@ async componentDidMount(){
             <div className="netflix-home">
    
             <div className="top-pic" style={{backgroundImage:`url(${this.state.image})`}} >
-        
             <div className="fade-bottom"></div>
             <div className="info-movie">
 
             
                 <div  className="movie-title">
-                 <h1 >{this.state.tvInfo.name}</h1>
+                <h1 >{this.state.tvInfo.name}</h1>
                 </div>
                 <div className="button">
                 <button className="play">Play</button>
@@ -271,29 +294,28 @@ async componentDidMount(){
             </div>
 
             { (this.state.isModalOpen)&&<Modal  isOpen={this.state.isModalOpen}  toggle={this.toggleModal}>
+            {console.log('mm',this.state.currId,this.state.currMovie,this.state.currTvid,this.state.currTv)}
             <ModalBody style={{backgroundImage:`url(${IMAGE_URL}/${this.state.currImg})`}}>
             <ModalHeader toggle={this.toggleModal}>{this.state.currMovie?this.state.currMovie:this.state.currTv}</ModalHeader>
            
-            {/* {console.log('db',this.state.dbId.name==(this.state.currMovie||this.state.currTv))} */}
             <button className="play" style={{float:'right'}} onClick={()=>{this.sendRequest(); 
-            
+            this.setState({watch:!this.state.watch})
             }}> 
+             
 
                 {/* //display----> 3 condition
                 //already in database  ---> remove  (get request)
                 //prev state is true----->remove(keep track of prev state of watchlist)
             //not in db and prev state is false===> add to watchlist */}
            
-            {(this.sayTrue())?<div><i class="fas fa-check-circle"></i>Remove from WatchList</div>:<div><i class="far fa-check-circle"></i>WatchList</div>}
+            {(this.sayTrue())?<div><i class="fas fa-check-circle"></i>Remove</div>:<div><i class="far fa-check-circle"></i>WatchList</div>}
             
-             {/* WatchList */}
             </button>
    
                 
           
             <div className="modal-story" >
             <div className="modal-video">
-             {this.playVideo}
             {(this.state.videoObj)&&<YouTube videoId={this.state.videoObj.key} opts={opts} />}
             </div>
             <div  className="modal-info">
@@ -313,14 +335,17 @@ async componentDidMount(){
             </div>
             <div className="pics">
                 {this.state.popularMovie.map(movie=>{
-                    return <div className="pic-inside" onClick={()=>{
-                        this.setState({isModalOpen:true});  
-                        this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average})
+                    return <div className="pic-inside" onClick={async()=>{
+                        await this.setState({isModalOpen:true}); 
+                        await this.setState({currTvid:''});this.setState({currTv:''}) 
+                        await this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average})
+                        await this.playVideo();
                         }
                         }>
                         <img src={`${IMAGE_URL}/${movie.poster_path}`}/>
                     </div>
                 })}
+              
             </div>
 
             </div>
@@ -333,9 +358,12 @@ async componentDidMount(){
         
             <div className="pics">
                 {this.state.trending.map((movie,index)=>{
-                    return <div  key={index} className="pic-inside" onClick={()=>{
-                        this.setState({isModalOpen:true});   
-                        this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average})
+                    return <div  key={index} className="pic-inside" onClick={async()=>{
+                        
+                        await this.setState({isModalOpen:true});
+                        await this.setState({currTvid:''});this.setState({currTv:''})   
+                        await this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average})
+                        await this.playVideo()
                         }}>
                         
                         <img src={`${IMAGE_URL}/${movie.poster_path}`} alt={index}/>
@@ -358,10 +386,12 @@ async componentDidMount(){
             </div>
             <div className="pics">
             {this.state.tv.map(movie=>{
-                    return <div className="pic-inside originals" onClick={()=>{
-                        this.setState({isModalOpen:true});   
-                        this.setState({currId:""})
-                        this.setState({currTv:movie.name,currImg:movie.poster_path,currInfo:movie.overview,currTvid:movie.id,movieRating:movie.vote_average})
+                    return <div className="pic-inside originals" onClick={async()=>{
+                        await this.setState({isModalOpen:true});   
+                        await this.setState({currId:""}); this.setState({currMovie:''})
+                        await this.setState({currTv:movie.name,currImg:movie.poster_path,currInfo:movie.overview,currTvid:movie.id,movieRating:movie.vote_average})
+                        console.log(this.state.currTvid)
+                        await this.playVideo()
                         }}>
                         <img src={`${IMAGE_URL}/${movie.poster_path}`}/>
                     </div>
@@ -377,9 +407,11 @@ async componentDidMount(){
             </div>
             <div className="pics">
                 {this.state.topRated.map(movie=>{
-                    return <div className="pic-inside" onClick={()=>{
-                        this.setState({isModalOpen:true});   
-                        this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average})
+                    return <div className="pic-inside" onClick={async()=>{
+                        await this.setState({isModalOpen:true});   
+                        await this.setState({currTvid:''});this.setState({currTv:''})
+                        await this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average})
+                        await this.playVideo();
                         }}>
                         <img src={`${IMAGE_URL}/${movie.poster_path}`}/>
                     </div>
@@ -394,9 +426,11 @@ async componentDidMount(){
             </div>
             <div className="pics">
                 {this.state.popularMovie.map(movie=>{
-                    return <div className="pic-inside" onClick={()=>{
-                        this.setState({isModalOpen:true});   
-                        this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average})
+                    return <div className="pic-inside" onClick={async()=>{
+                        await this.setState({isModalOpen:true});   
+                        await this.setState({currTvid:''});this.setState({currTv:''})
+                        await this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average})
+                        await this.playVideo();
                         }}>
                         <img src={`${IMAGE_URL}/${movie.poster_path}`}/>
                     </div>
@@ -411,9 +445,11 @@ async componentDidMount(){
             </div>
             <div className="pics">
             {this.state.popularMovie.map(movie=>{
-                    return <div className="pic-inside" onClick={()=>{
-                        this.setState({isModalOpen:true});   
-                        this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average})
+                    return <div className="pic-inside" onClick={async()=>{
+                        await this.setState({isModalOpen:true});
+                        await this.setState({currTvid:''});this.setState({currTv:''})   
+                        await this.setState({currMovie:movie.title,currImg:movie.poster_path,currInfo:movie.overview,currId:movie.id,movieRating:movie.vote_average});
+                        await this.playVideo();
                         }}>
                         <img src={`${IMAGE_URL}/${movie.poster_path}`} alt="djd"/>
                     </div>
