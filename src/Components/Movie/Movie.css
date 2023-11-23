@@ -1,39 +1,33 @@
-.movie-item{
-    height: 321px;
-    width: 250px;
-margin-top: 30px;
-padding:20px;
-
+.movie-item {
+  height: 321px;
+  width: 250px;
+  margin-top: 30px;
+  padding: 20px;
 }
-.movie-item:hover{
-transform: scale(1.1);
-    
+.movie-item:hover {
+  transform: scale(1.1);
 }
 
-.movie-poster{
-height:88%;
+.movie-poster {
+  height: 88%;
 }
 
-
-.movie-poster img{
-    height:100%;
-    width:100%;
+.movie-poster img {
+  height: 100%;
+  width: 100%;
 }
 
-.movie-info{
-    min-height:12%;
-    display:flex;
-    justify-content: space-between;
-    padding: 7px;
-    background-color: #2f3640;
-    color: white;
-    font-size: small;
+.movie-info {
+  min-height: 12%;
+  display: flex;
+  justify-content: space-between;
+  padding: 7px;
+  background-color: #2f3640;
+  color: white;
+  font-size: small;
 }
 
-.movie-title{
-
-
+.movie-title {
 }
-.movie-rating{
-
+.movie-rating {
 }

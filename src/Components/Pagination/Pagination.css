@@ -1,5 +1,7 @@
 .pagination{
-    margin-left: 36%
+    /* margin-left: 36% */
+    display: flex;
+    justify-content: center;
 }
 
 

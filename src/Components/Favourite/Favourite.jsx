@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React, { Component } from 'react'
 import { API_KEY,API_URL, IMAGE_URL } from '../../API/secrets';
+import Header from '../Header/Header';
 import './Favourite.css'
 
 
@@ -14,16 +15,16 @@ class Favourite extends Component {
     }
 
     async componentDidMount(){
-       let data= await axios.get('http://localhost:4000/fav/')
+      //  let data= await axios.get('http://localhost:4000/fav/')
 
-      .then(response => {
-        console.log('res: ',response.data);
+      // .then(response => {
+      //   console.log('res: ',response.data);
         
-        this.setState({watchlist:response.data})
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+      //   this.setState({watchlist:response.data})
+      // })
+      // .catch((error) => {
+      //   console.log(error);
+      // })
 
 
 
@@ -88,9 +89,9 @@ class Favourite extends Component {
         }
       })
       
-      await axios.delete('http://localhost:4000/fav/'+mainId).then(res=>console.log(res)).catch(err=>console.log(err))
-      let arr=this.state.movieInfo.filter((movie)=>{if(movie.id!=id)return true})
-      this.setState({movieInfo:arr})
+      // await axios.delete('http://localhost:4000/fav/'+mainId).then(res=>console.log(res)).catch(err=>console.log(err))
+      // let arr=this.state.movieInfo.filter((movie)=>{if(movie.id!=id)return true})
+      // this.setState({movieInfo:arr})
 
 
     }
@@ -103,6 +104,8 @@ class Favourite extends Component {
 
 
         return (
+          <>
+            <Header/>
             <div className="movie-fav">
              <div className="fav-head">
              <h3>Your Favourites</h3>
@@ -125,10 +128,8 @@ class Favourite extends Component {
             </div>
               })}
               </div>
-    
-
-            
             </div>
+          </>
         )
     }
 }

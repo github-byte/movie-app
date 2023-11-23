@@ -1,5 +1,5 @@
 const router = require('express').Router();
-let Fav = require('./favourite.model');
+let Fav = require('../favourite.model');
 
 //get request for fav
 //creating rest api for getting data

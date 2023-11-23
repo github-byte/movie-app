@@ -1,10 +1,10 @@
-let Fav = require('./favourite.model');
-let Search = require('./search.model');
 const express = require('express');
-const router = require('express').Router();
 const app = express();
 const cors = require('cors');
 const mongoose=require("mongoose");
+const favRouter = require('./routes/fav.router');
+const searchRouter = require('./routes/search.router');
+const loginRouter = require('./routes/login.route')
 require('dotenv').config();
 
 const uri = process.env.ATLAS_URI;
@@ -20,12 +20,9 @@ const port = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-
-const favRouter = require('./fav.router');
-const searchRouter = require('./search.router');
-
-app.use('/fav', favRouter);
+// app.use('/fav', favRouter);
 app.use('/search', searchRouter);
+app.use('/login',loginRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-let Search = require('./search.model');
+let Search = require('../search.model');
 
 
 router.route('/').get((req, res) => {

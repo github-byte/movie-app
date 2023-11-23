@@ -3,22 +3,27 @@
     height:59px;
     justify-content: space-between;
     padding-top: 20px;
-    margin-left: 59px;
-    margin-right:40px;
+    padding-left: 20px;
+    padding-right: 40px;
+    margin-left: 0px;
+    margin-right:4px;
     color: white !important;
     text-decoration: none !important;
+    background-color: #1a232e;
 
 }
 
 .logo{
-    height:90%;
+    
     display: flex;
     color: white !important;
     text-decoration: none !important;
 }
 
 .logo> img{
-    height:30px;
+    height: 175px;
+    margin-top: -51px;
+    margin-left: 11px;
 }
 
 .header-links{
@@ -40,4 +45,8 @@
     text-decoration: none;
     box-shadow: none;
     border: 1px solid grey;
+}
+
+.search-btn{
+    display: flex;
 }

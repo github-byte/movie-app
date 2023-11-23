@@ -1,0 +1,12 @@
+.loginDiv{
+    border-color: '#333';
+    width:30%; 
+    margin: auto;
+    text-align: center;
+    transform: translate(0, 50%);
+    
+}
+
+.loginInput{
+    background-color: '#333';
+}
