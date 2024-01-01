@@ -100,14 +100,21 @@
   width: 282px;
   border-radius: 10px;
   padding-right: 5px;
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  transition: transform 0.3s;
   object-fit: cover;
-  /* object-fit: contain; */
+  object-position: top;
 }
+
 .pic-inside > img:hover {
   transform: scale(1.2);
   cursor: pointer;
+  z-index: 1 !important;
+  /* position: relative; */
   transition: transform 0.5s;
-  object-fit: fit !important;
+  object-fit: cover !important;
 }
 
 .bottom {
@@ -146,6 +153,7 @@
   height: 470px !important;
   width: 299px !important;
   object-fit: contain;
+  z-index: 0;
   padding: 10px !important;
 }
 

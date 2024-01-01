@@ -1,9 +1,6 @@
 .movies {
   display: grid;
   grid-template-columns: 25% 25% 25% 25%;
-  margin-left: 10%;
-  margin-right: 10%
-  /* justify-content: space-evenly; */
-  /* flex-wrap: wrap;
-    gap:2%; */
+  margin-left: 18%;
+  margin-right: 18%
 }

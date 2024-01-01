@@ -37,10 +37,10 @@ class Header extends Component {
     return (
       <div className="header">
         <div className="logo">
-          <img src="sample.png" alt="netflix" />
+          <Link to={"/home"}><img src="sample.png" alt="netflix" /></Link>
           <div class="header-links">
             <div class="header-link">
-              <Link to="/" exact>
+              <Link to="/home" exact>
                 Home
               </Link>
             </div>
@@ -68,13 +68,13 @@ class Header extends Component {
               placeholder="Search"
               value={this.state.newMovie}
               onChange={this.handleChange}
-              onKeyPress={this.handleSubmit}
+              onKeyDown={this.handleSubmit}
             />{" "}
           </Link>
           {!this.state.showInput && (
             <i
               className="fas fa-search"
-              style={{ color: "white" }}
+              style={{ color: "white", marginTop: '4px', cursor:"pointer" }}
               onClick={() => {
                 this.setState({ showInput: !this.state.showInput });
               }}

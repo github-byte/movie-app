@@ -16,7 +16,6 @@ const app= express();
 app.use(express.json());
 
 
-
 router.route('/add').post((req, res) => {
   console.log("Hello")
   const phoneNo=req.body.login;
@@ -28,7 +27,6 @@ router.route('/add').post((req, res) => {
   const data =`${phoneNo}.${otp}.${expires}`
   const hash = crypto.createHmac('sha256',smsKey).update(data).digest('hex')
   const fullHash = `${hash}.${expires}`
-
 
   client.messages.create({
     body: `Your one Time Login Password for watchReels is ${otp}`,

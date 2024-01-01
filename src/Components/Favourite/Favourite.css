@@ -1,29 +1,38 @@
-.fav-img>img {
-    height: 300px;
-    width:300px;
+.fav-img > a > img {
+  height: 400px;
+  width: 100%;
 }
 
-.fav-head{
-    color:white;
-    padding: 3%;
-}
-.movie-card{
-display: flex !important;
-flex-wrap: wrap;
-padding: 5%;
-}
-.fav-card{
-    display: block !important;
-    padding:3%;
+.fav-head {
+  color: white;
+  padding: 3%;
 }
 
-.fav-text{
-    background-color: rgb(47, 54, 64);
-    padding-left:0% ;
-    height:50px
+.movie-card {
+  display: grid;
+  /* flex-wrap: wrap; */
+  padding-left: 3%;
+  padding-right: 3%;
+  grid-template-columns: 20% 20% 20% 20%;
+  justify-content: center;
+  column-gap: 40px;
+  row-gap: 40px;
 }
 
-.my-button{
-    margin-left: 20%;
-    margin-top: 3%;
+.fav-card {
+  display: block !important;
+  /* padding-right: 3%; */
+}
+
+.fav-text {
+  background-color: rgb(47, 54, 64);
+  display: flex;
+  justify-content: center;
+}
+
+.my-button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  /* margin-left: 20%;
+  margin-top: 3%; */
 }

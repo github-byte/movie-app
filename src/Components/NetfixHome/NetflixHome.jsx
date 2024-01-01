@@ -68,9 +68,12 @@ class NetflixHome extends Component {
     tvInfo: "",
     vidObj: {},
   };
-  //
 
   async componentDidMount() {
+    await axios
+      .get("http://localhost:4000/fav")
+      .then((response) => this.setState({ dbId: response.data }))
+      .catch((err) => console.log(err));
     //https://api.themoviedb.org/3/movie/latest?api_key=d8af0c11dd67d6349c48da4ffc70b8b0&language=en-US
 
     // let latestData=await axios.get(`${API_URL}movie/latest?api_key=${API_KEY}&language=en-US`);
@@ -113,7 +116,6 @@ class NetflixHome extends Component {
     let tv = await axios.get(
       `${API_URL}discover/tv?api_key=${API_KEY}&with_networks=213`
     );
-    console.log(tv.data);
     let tvid = tv.data.results.slice(0, 10);
     let im = IMAGE_URL + tv.data.results[1].poster_path;
     let movieIn = tv.data.results[1];
@@ -126,64 +128,54 @@ class NetflixHome extends Component {
     console.log("hee");
   }
 
-  async playVideo() {
-    console.log("tc", this.state.currTvid);
-    if (!this.state.currId && this.state.currTvid) {
-      let req = await axios.get(
-        `${API_URL}tv/${this.state.currTvid}/videos?api_key=${API_KEY}&language=en-US`
-      );
+  async playVideo(id, type) {
+    let { data = [], status = 0 } = await axios.get(
+      `${API_URL}${type}/${id}/videos?api_key=${API_KEY}&language=en-US`
+    );
 
-      this.setState({ vidObj: req.data });
-
-      this.setState({ videoObj: this.state.vidObj.results });
-      let v = await this.state.videoObj.filter(function (video) {
+    if (data && (status >= 200 || status <= 300)) {
+      this.setState({ vidObj: data });
+      let finalVideoData = (data.results || []).filter(function (video) {
         if (video.type === "Trailer" && video.site === "YouTube") {
           return true;
         } else return false;
       });
-
-      await this.setState({ videoObj: v[0] });
-    } else if (this.state.currId && !this.state.currTvid) {
-      // https://api.themoviedb.org/3/
-
-      let req = await axios.get(
-        `${API_URL}movie/${this.state.currId}/videos?api_key=${API_KEY}&language=en-US`
-      );
-
-      this.setState({ vidObj: req.data });
-
-      this.setState({ videoObj: this.state.vidObj.results });
-      let v = await this.state.videoObj.filter(function (video) {
-        if (video.type === "Trailer" && video.site === "YouTube") {
-          return true;
-        } else return false;
-      });
-
-      await this.setState({ videoObj: v[0] });
+      this.setState({ videoObj: finalVideoData?.[0] });
+    } else {
+      return;
     }
   }
 
-  async componentDidUpdate() {
-    //   await axios.get("http://localhost:4000/fav").then((response)=>this.setState({dbId:response.data})).catch(err=>console.log(err))
-  }
+  // async componentDidMount() {
+  //     // await axios.get("http://localhost:4000/fav").then((response)=>this.setState({dbId:response.data})).catch(err=>console.log(err))
+  // }
 
-  toggleModal = async () => {
-    await this.setState({ isModalOpen: !this.state.isModalOpen });
+  toggleModal = () => {
+    this.setState({ isModalOpen: !this.state.isModalOpen });
   };
 
-  sayTrue = () => {
-    let state = false;
-    this.state.dbId.map((e) => {
-      if (this.state.currMovie == e.name || e.name == this.state.currTv) {
-        state = true;
+  sayTrue = (data = []) => {
+    let flag = false;
+    console.log(
+      "tv moview app222",
+      this.state.dbId,
+      data,
+      this.state.currMovie,
+      this.state.currTv
+    );
+    const moviewData = data && data?.length > 0 ? data : this.state.dbId;
+    moviewData.map((e) => {
+      if (this.state.currMovie === e.name || e.name === this.state.currTv) {
+        flag = true;
       }
+      return false;
     });
-
-    return state;
+    return flag;
   };
 
-  sendRequest = async () => {
-    let ans = await this.sayTrue();
+  sendRequest = async (e) => {
+    e.stopPropagation();
+    let ans = this.sayTrue();
     console.log("ans: ", ans);
     if (!ans) {
       let obj = {};
@@ -204,14 +196,22 @@ class NetflixHome extends Component {
         };
       }
 
-      (await this.state.watchlist) && this.setState({ watchlist: obj });
-
-      console.log("watch", this.state.watchlist);
+      this.state.watchlist && this.setState({ watchlist: obj });
 
       //if prev if id matches current id then set add to false
       //if id in db set add to false
 
-      // await (this.state.watchlist) && axios.post('http://localhost:4000/fav/add',this.state.watchlist).then(()=>{this.sayTrue()}).then(res => console.log(res.data)).catch(err=>console.log(err));
+      this.state.watchlist &&
+        (
+          await axios
+            .post("http://localhost:4000/fav/add", obj)
+            .then((data) => {
+              console.log("inside added state", data)
+              const {data: res = []} = data || {}
+              this.setState({ dbId: res });
+              this.sayTrue(res);
+            })
+        )?.catch((err) => console.log(err));
     } else {
       //delete from db
       let id = "";
@@ -220,7 +220,7 @@ class NetflixHome extends Component {
           id = e._id;
         }
       });
-      // await axios.delete('http://localhost:4000/fav/'+id).then(res=>console.log(res)).catch(err=>console.log(err))
+      await axios.delete('http://localhost:4000/fav/'+id).then(res=>console.log(res)).catch(err=>console.log(err))
       let arr = this.state.dbId.filter((movie) => {
         if (movie._id != id) {
           return true;
@@ -230,6 +230,32 @@ class NetflixHome extends Component {
     }
   };
 
+  handleMovieData = (movie = {}, type = "") => {
+    const { media_type: mediaType = "", title = "", id = "" } = movie || {};
+    if (type === "movie" || mediaType === "movie") {
+      this.setState({
+        currMovie: title,
+        currImg: movie.poster_path,
+        currInfo: movie.overview,
+        currId: id,
+        movieRating: movie.vote_average,
+      });
+      this.setState({ currTvid: "" });
+      this.setState({ currTv: "" });
+    } else {
+      this.setState({ currId: "" });
+      this.setState({ currMovie: "" });
+      this.setState({
+        currTv: movie.name,
+        currImg: movie.poster_path,
+        currInfo: movie.overview,
+        currTvid: movie.id,
+        movieRating: movie.vote_average,
+      });
+    }
+    this.setState({ movieInfo: movie });
+  };
+
   render() {
     return (
       <>
@@ -237,7 +263,10 @@ class NetflixHome extends Component {
         <div className="netflix-home">
           <div
             className="top-pic"
-            style={{ backgroundImage: `url(${this.state.image})` }}
+            style={{
+              backgroundImage: `url(peakpx.jpg)`,
+              filter: "brightness(0.6)",
+            }}
           >
             <div className="fade-bottom"></div>
             <div className="info-movie">
@@ -245,7 +274,20 @@ class NetflixHome extends Component {
                 <h1>{this.state.tvInfo.name}</h1>
               </div>
               <div className="button">
-                <button className="play">Play</button>
+                {/* <button className="play">
+                  <Link
+                    style={{ color: "white", textDecoration: "none" }}
+                    to={{
+                      pathname: "/moviepage",
+                      state: {
+                        ...this.state.movieInfo,
+                        videoLink: this.state.videoObj?.key,
+                      },
+                    }}
+                  >
+                    Play
+                  </Link>
+                </button> */}
                 <button className="list">
                   <Link
                     to={{
@@ -269,51 +311,80 @@ class NetflixHome extends Component {
               <ModalBody
                 style={{
                   backgroundImage: `url(${IMAGE_URL}/${this.state.currImg})`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "100%",
+                  backgroundPosition: "center",
                 }}
               >
-                <ModalHeader toggle={this.toggleModal}>
-                  {this.state.currMovie
-                    ? this.state.currMovie
-                    : this.state.currTv}
-                </ModalHeader>
-
-                <button
-                  className="play"
-                  style={{ float: "right" }}
-                  onClick={() => {
-                    this.sendRequest();
-                    this.setState({ watch: !this.state.watch });
+                <Link
+                  style={{ color: "white", textDecoration: "none" }}
+                  to={{
+                    pathname: "/moviepage",
+                    state: {
+                      ...this.state.movieInfo,
+                      videoLink: this.state.videoObj?.key,
+                    },
+                    // query: { the: {...this.state.movieInfo, videoLink: this.state.videoObj?.key} },
                   }}
                 >
-                  {/* //display----> 3 condition
+                  <ModalHeader toggle={this.toggleModal}>
+                    {this.state.currMovie
+                      ? this.state.currMovie
+                      : this.state.currTv}
+                    {/* {(this.state.mouseOver)&& (this.state.video)?<YouTube videoId={this.state.video.key} opts={opts} />:} */}
+                  </ModalHeader>
+
+                  <button
+                    className="play"
+                    style={{ float: "right" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      this.sendRequest(e);
+                      this.setState({ watch: !this.state.watch });
+                    }}
+                  >
+                    {/* //display----> 3 condition
                 //already in database  ---> remove  (get request)
                 //prev state is true----->remove(keep track of prev state of watchlist)
             //not in db and prev state is false===> add to watchlist */}
 
-                  {this.sayTrue() ? (
-                    <div>
-                      <i class="fas fa-check-circle"></i>Remove
-                    </div>
-                  ) : (
-                    <div>
-                      <i class="far fa-check-circle"></i>WatchList
-                    </div>
-                  )}
-                </button>
-
-                <div className="modal-story">
-                  <div className="modal-video">
-                    {this.state.videoObj && (
-                      <YouTube videoId={this.state.videoObj.key} opts={opts} />
+                    {this.sayTrue() ? (
+                      <div>
+                        <i
+                          class="fas fa-check-circle"
+                          style={{ marginRight: "5px" }}
+                        ></i>
+                        Remove
+                      </div>
+                    ) : (
+                      <div>
+                        <i
+                          class="far fa-check-circle"
+                          style={{ marginRight: "5px" }}
+                        ></i>
+                        WatchList
+                      </div>
                     )}
-                  </div>
-                  <div className="modal-info">
-                    <div className="summary">{this.state.currInfo}</div>
-                    <div className="rating">
-                      Rating: {this.state.movieRating} IMDB
+                  </button>
+
+                  <div className="modal-story">
+                    <div className="modal-video">
+                      {this.state.videoObj && (
+                        <YouTube
+                          videoId={this.state.videoObj.key}
+                          opts={opts}
+                        />
+                      )}
+                    </div>
+                    <div className="modal-info">
+                      <div className="summary">{this.state.currInfo}</div>
+                      <div className="rating">
+                        Rating: {this.state.movieRating} IMDB
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               </ModalBody>
             </Modal>
           )}
@@ -347,7 +418,7 @@ class NetflixHome extends Component {
               </div>
             </div> */}
 
-            <div className="two" style={{marginTop:'-100px'}}>
+            <div className="two" style={{ marginTop: "-100px" }}>
               <div className="heading">Top Rated</div>
               <div className="pics">
                 <Carousel
@@ -357,22 +428,15 @@ class NetflixHome extends Component {
                 >
                   {this.state.trending ? (
                     this.state.trending.map((movie, index) => {
+                      const { media_type: mediaType = "" } = movie || {};
                       return (
                         <div
                           key={index}
                           className="pic-inside"
-                          onClick={async () => {
-                            await this.setState({ isModalOpen: true });
-                            await this.setState({ currTvid: "" });
-                            this.setState({ currTv: "" });
-                            await this.setState({
-                              currMovie: movie.title,
-                              currImg: movie.poster_path,
-                              currInfo: movie.overview,
-                              currId: movie.id,
-                              movieRating: movie.vote_average,
-                            });
-                            await this.playVideo();
+                          onClick={() => {
+                            this.setState({ isModalOpen: true });
+                            this.handleMovieData(movie);
+                            this.playVideo(movie.id, mediaType);
                           }}
                         >
                           <img
@@ -402,19 +466,11 @@ class NetflixHome extends Component {
                     return (
                       <div
                         className="pic-inside originals"
-                        onClick={async () => {
-                          await this.setState({ isModalOpen: true });
-                          await this.setState({ currId: "" });
-                          this.setState({ currMovie: "" });
-                          await this.setState({
-                            currTv: movie.name,
-                            currImg: movie.poster_path,
-                            currInfo: movie.overview,
-                            currTvid: movie.id,
-                            movieRating: movie.vote_average,
-                          });
+                        onClick={() => {
+                          this.setState({ isModalOpen: true });
+                          this.handleMovieData(movie, "tv");
                           console.log(this.state.currTvid);
-                          await this.playVideo();
+                          this.playVideo(movie.id, "tv");
                         }}
                       >
                         <img src={`${IMAGE_URL}/${movie.poster_path}`} />
@@ -438,18 +494,10 @@ class NetflixHome extends Component {
                     return (
                       <div
                         className="pic-inside"
-                        onClick={async () => {
-                          await this.setState({ isModalOpen: true });
-                          await this.setState({ currTvid: "" });
-                          this.setState({ currTv: "" });
-                          await this.setState({
-                            currMovie: movie.title,
-                            currImg: movie.poster_path,
-                            currInfo: movie.overview,
-                            currId: movie.id,
-                            movieRating: movie.vote_average,
-                          });
-                          await this.playVideo();
+                        onClick={() => {
+                          this.setState({ isModalOpen: true });
+                          this.handleMovieData(movie, "movie");
+                          this.playVideo(movie.id, "movie");
                         }}
                       >
                         <img src={`${IMAGE_URL}/${movie.poster_path}`} />
@@ -473,18 +521,10 @@ class NetflixHome extends Component {
                     return (
                       <div
                         className="pic-inside"
-                        onClick={async () => {
-                          await this.setState({ isModalOpen: true });
-                          await this.setState({ currTvid: "" });
-                          this.setState({ currTv: "" });
-                          await this.setState({
-                            currMovie: movie.title,
-                            currImg: movie.poster_path,
-                            currInfo: movie.overview,
-                            currId: movie.id,
-                            movieRating: movie.vote_average,
-                          });
-                          await this.playVideo();
+                        onClick={() => {
+                          this.setState({ isModalOpen: true });
+                          this.handleMovieData(movie, "movie");
+                          this.playVideo(movie.id, "movie");
                         }}
                       >
                         <img src={`${IMAGE_URL}/${movie.poster_path}`} />

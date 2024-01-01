@@ -1,16 +1,19 @@
 .header{
     display: flex;
     height:59px;
+    width:100%;
+    position: absolute;
+    background: transparent;
     justify-content: space-between;
     padding-top: 20px;
     padding-left: 20px;
     padding-right: 40px;
     margin-left: 0px;
+    z-index: 9;
     margin-right:4px;
     color: white !important;
     text-decoration: none !important;
-    background-color: #1a232e;
-
+    /* background-color: #1a232e; */
 }
 
 .logo{
@@ -20,7 +23,7 @@
     text-decoration: none !important;
 }
 
-.logo> img{
+.logo > a > img{
     height: 175px;
     margin-top: -51px;
     margin-left: 11px;
