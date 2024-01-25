@@ -1,10 +1,19 @@
-.pagination{
-    /* margin-left: 36% */
-    display: flex;
-    justify-content: center;
+.pagination {
+  /* margin-left: 36% */
+  display: flex;
+  justify-content: center;
 }
 
+.page-link {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.page-link, .disabled {
+  background-color: black;
+}
 
 nav {
-    margin-top: 76px;
+  margin-top: 200px;
 }

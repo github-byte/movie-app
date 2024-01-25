@@ -3,13 +3,7 @@ import Movies from './Components/Movies/Movies.jsx';
 import axios from 'axios'
 import { API_KEY, API_URL } from './API/secrets.js';
 import Pagination from './Components/Pagination/Pagination'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import Favourite from './Components/Favourite/Favourite'
-import MoviePage from './Components/MoviePage/MoviePage'
-import NetflixHome from './Components/NetfixHome/NetflixHome.jsx';
-import LoginPage from './Components/Login/LoginPage.js';
 import Header from './Components/Header/Header';
-
 class SearchPage extends Component {
 
   state = {
@@ -32,14 +26,15 @@ class SearchPage extends Component {
     this.setState({
       movieData: movieData,
     });
+    this.handleMovie(this.state.currMovie)
   }
 
 
-  setMovie = async (newMovie) => {
+  handleMovie = async (newMovie) => {
 
     let data = await axios.get(API_URL + 'search/movie', { params: { api_key: API_KEY, page: this.state.currPage, query: newMovie } })
     let pagesCount = data.data.total_pages;
-    console.log(pagesCount)
+    console.log('inside page', pagesCount)
     let pages = [];
 
     for (let i = 1; i <= pagesCount; i++) {
@@ -49,7 +44,6 @@ class SearchPage extends Component {
     let movieData = data.data.results.slice(0, 10);
     this.setState({ movieData: movieData, currMovie: newMovie, pages: pages });
   }
-
 
   prevPage = async () => {
     let data = await axios.get(API_URL + 'search/movie', {
@@ -89,7 +83,7 @@ class SearchPage extends Component {
     return (
       (this.state.movieData.length) ?
         (<>
-          <Header />
+          <Header showSearch={true} currMovieState={this.setState} handleMovie={this.handleMovie} />
           <Movies movies={this.state.movieData}></Movies>
           <Pagination pages={this.state.pages.length > 5 ? this.state.pages.slice(this.state.currPage - 1, this.state.currPage + 4) : this.state.pages} currPage={this.state.currPage}
             setPage={this.setPage}

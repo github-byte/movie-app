@@ -20,7 +20,7 @@ class MoviePage extends Component {
 
   async componentDidMount() {
     //https://api.themoviedb.org/3/movie/500/videos?api_key=d8af0c11dd67d6349c48da4ffc70b8b0&language=en-US
-    let { id = "", type = "movie" } = this.props.location.state;
+    let { id = "", type = "movie" } = this.props.location.state || {};
     let req = await axios.get(
       `${API_URL}${type}/${id}/videos?api_key=${API_KEY}&language=en-US`
     );

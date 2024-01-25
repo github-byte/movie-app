@@ -1,5 +1,7 @@
 .movies {
   display: grid;
+  position: relative;
+  top: 100px;
   grid-template-columns: 25% 25% 25% 25%;
   margin-left: 18%;
   margin-right: 18%

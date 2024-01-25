@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { IMAGE_URL } from "../../API/secrets";
 import "./Movie.css";
 import { API_URL, API_KEY } from "../../API/secrets";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { Link } from "react-router-dom";
 import YouTube from "react-youtube";
 import axios from "axios";
@@ -11,6 +13,7 @@ class Movie extends Component {
     movieData: {},
     video: {},
     mouseOver: false,
+    loader: true,
   };
 
   async componentDidMount() {
@@ -22,6 +25,7 @@ class Movie extends Component {
     this.setState({
       movieData: { ...data.data, img },
     });
+    this.setState({ loader: false });
   }
   playVideo = async (obj) => {
     let req = await axios.get(
@@ -34,12 +38,6 @@ class Movie extends Component {
       } else return false;
     });
     this.setState({ video: v[0] });
-
-    //onClick={()=>
-    // {
-    //     this.playVideo(this.state.movieData.id);
-    //     this.setState({mouseOver:!this.state.mouseOver})
-    //     }}
   };
 
   render() {
@@ -52,17 +50,29 @@ class Movie extends Component {
     };
 
     let { poster_path, title, vote_average, id } = this.props.movie;
-
+    if (this.state.loader)
+      return (
+        <SkeletonTheme baseColor="#202020" highlightColor="#444">
+          <p>
+            <Skeleton
+              height={350}
+              count={this.state.movieData?.length}
+              width={270}
+              containerClassName={"skeleton"}
+            />
+          </p>
+        </SkeletonTheme>
+      );
     return (
       <div className="movie-item">
         <div className="movie-poster">
           <Link
             to={{
               pathname: "/moviepage",
-              state:{...this.state.movieData}
+              state: { ...this.state.movieData },
             }}
           >
-            <img src={`${IMAGE_URL + poster_path}`} alt="movieImg" />
+            <img src={`${IMAGE_URL + poster_path || ""}`} alt="movieImg" />
             {/* {(this.state.mouseOver)&& (this.state.video)?<YouTube videoId={this.state.video.key} opts={opts} />:} */}
           </Link>
         </div>

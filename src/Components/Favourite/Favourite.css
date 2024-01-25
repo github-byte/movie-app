@@ -30,6 +30,11 @@
   justify-content: center;
 }
 
+.skeleton{
+  display: flex;
+  gap: 10px;
+}
+
 .my-button {
   margin-top: 10px;
   margin-bottom: 10px;

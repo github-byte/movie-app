@@ -11,6 +11,7 @@ import NetflixHome from './Components/NetfixHome/NetflixHome.jsx';
 import LoginPage from './Components/Login/LoginPage.js';
 import Header from './Components/Header/Header.jsx';
 import SearchPage from './SearchPage.js';
+import PrivateRoute from './privateRoute.js';
 //rce
 
 class App extends Component {
@@ -93,11 +94,13 @@ class App extends Component {
       <div className="App">
         <Router>
           <Switch>
-            <Route path="/home" exact component={NetflixHome}></Route>
-            <Route path='/search' exact component={SearchPage}></Route>
-            <Route path="/moviePage" component={MoviePage}></Route>
-            <Route path="/fav" component={Favourite}></Route>
-            <Route path="/" component={LoginPage}></Route>
+            <Route path="/login" exact component={LoginPage}></Route>
+            <PrivateRoute>
+              <Route path="/" exact component={NetflixHome}></Route>
+              <Route path='/search' exact component={SearchPage}></Route>
+              <Route path="/moviePage" component={MoviePage}></Route>
+              <Route path="/fav" component={Favourite}></Route>
+            </PrivateRoute>
           </Switch>
         </Router>
       </div>

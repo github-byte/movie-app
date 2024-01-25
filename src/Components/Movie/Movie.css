@@ -6,6 +6,7 @@
 }
 .movie-item:hover {
   transform: scale(1.1);
+  transition: transform 0.5s;
 }
 
 .movie-poster {
@@ -13,12 +14,12 @@
 }
 
 .movie-poster img {
-  height: 100%;
+  height: 80%;
   width: 100%;
 }
 
 .movie-info {
-  min-height: 12%;
+  height: 20%;
   display: flex;
   justify-content: space-between;
   padding: 7px;

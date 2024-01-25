@@ -8,10 +8,12 @@ class Header extends Component {
     newMovie: "",
     showInput: false,
     dbMovie: [],
+    movies:[],
     option: false,
   };
 
   async componentDidMount() {
+    this.setState({ showInput: this.props.showSearch })
     await axios
       .get("http://localhost:4000/search/")
       .then((res) => this.setState({ dbMovie: res.data }))
@@ -24,11 +26,11 @@ class Header extends Component {
 
   handleSubmit = async (e) => {
     if (e.key === "Enter") {
-    //   this.props.currMovie(this.state.newMovie);
-
+      console.log("inside new moview", this.props.currMovieState)
+      this.props.handleMovie(this.state.newMovie)
       await axios
         .post("http://localhost:4000/search/add", this.state.newMovie)
-        .then((res) => console.log('my res33',res))
+        .then((res) => console.log("my res33", res))
         .catch((err) => console.log(err));
     }
   };
@@ -37,10 +39,12 @@ class Header extends Component {
     return (
       <div className="header">
         <div className="logo">
-          <Link to={"/home"}><img src="sample.png" alt="netflix" /></Link>
+          <Link to={"/"}>
+            <img src="sample.png" alt="netflix" />
+          </Link>
           <div class="header-links">
             <div class="header-link">
-              <Link to="/home" exact>
+              <Link to="/" exact>
                 Home
               </Link>
             </div>
@@ -60,6 +64,7 @@ class Header extends Component {
           <Link to="/search" exact>
             <input
               id="browsers"
+              autoFocus
               className="input-text"
               type={this.state.showInput ? "text" : "hidden"}
               onClick={() => {
@@ -74,14 +79,14 @@ class Header extends Component {
           {!this.state.showInput && (
             <i
               className="fas fa-search"
-              style={{ color: "white", marginTop: '4px', cursor:"pointer" }}
+              style={{ color: "white", marginTop: "4px", cursor: "pointer" }}
               onClick={() => {
                 this.setState({ showInput: !this.state.showInput });
               }}
             ></i>
           )}
           <div class="header-link">
-            <Link to="/login" exact>
+            <Link to="/login" exact onClick={()=> localStorage.removeItem("user")}>
               Logout
             </Link>
           </div>

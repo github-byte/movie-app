@@ -82,9 +82,14 @@
   background-color: white;
   color: black;
 }
-.list:hover {
+.list:hover > li {
   background-color: white;
   color: black;
+}
+
+.watchList {
+  color: white;
+  text-decoration: none;
 }
 
 .pics {
@@ -109,19 +114,35 @@
 }
 
 .pic-inside > img:hover {
-  transform: scale(1.2);
+  transform: scale(1.05);
   cursor: pointer;
-  z-index: 1 !important;
-  /* position: relative; */
   transition: transform 0.5s;
   object-fit: cover !important;
 }
 
-.bottom {
+/* .imageList {
+  transform: scale(1.2);
   position: absolute;
+  z-index: 999;
+} */
+
+.pic-inside > img:hover::after {
+  transform: scale(1.2);
+  position: absolute;
+  z-index: 999;
+}
+
+.skeleton {
+  display: flex;
+  gap: 10px;
+}
+
+.bottom {
+  /* position: absolute; */
   /* top: 60%; */
   width: 95%;
-  margin-left: 59px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .one {
@@ -152,9 +173,13 @@
 .originals > img {
   height: 470px !important;
   width: 299px !important;
-  object-fit: contain;
+  object-fit: cover;
   z-index: 0;
   padding: 10px !important;
+}
+
+.originals{
+  transition: 2s --all;
 }
 
 .modal-content {
