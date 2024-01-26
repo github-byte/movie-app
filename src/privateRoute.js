@@ -13,18 +13,21 @@ class PrivateRoute extends Component {
         user: null
     }
     componentDidMount() {
+        console.log("inside update22")
         this.getLocalStorage();
     }
     getLocalStorage = () => {
         const localData = localStorage?.getItem("user");
+        console.log('my user22', Boolean(this.state.user))
         if (localData) {
             this.setState({ user: localData })
         }
     }
     render() {
-        console.log('my user233', Boolean(this.state.user))
+        const localData = localStorage?.getItem("user") || null;
+        if(!localData) return <LoginPage/>
         return (
-            this.state.user ? this.props.children : <Redirect to="/login"/>
+            this.props.children
         )
     }
 }

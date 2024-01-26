@@ -94,12 +94,12 @@ class App extends Component {
       <div className="App">
         <Router>
           <Switch>
-            <Route path="/login" exact component={LoginPage}></Route>
             <PrivateRoute>
               <Route path="/" exact component={NetflixHome}></Route>
               <Route path='/search' exact component={SearchPage}></Route>
               <Route path="/moviePage" component={MoviePage}></Route>
               <Route path="/fav" component={Favourite}></Route>
+              <Route path="/login" exact component={LoginPage}></Route>
             </PrivateRoute>
           </Switch>
         </Router>

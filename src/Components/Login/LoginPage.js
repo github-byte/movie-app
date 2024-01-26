@@ -68,7 +68,7 @@ class LoginPage extends Component {
 
   onSubmitOtp = (e) => {
     const code = this.state.otp;
-    if (!code) return
+    if (!code || !window.confirmationResult) return
     window.confirmationResult.confirm(code).then((result) => {
       // User signed in successfully.
       const user = result.user;
@@ -76,6 +76,8 @@ class LoginPage extends Component {
 
       localStorage.setItem("user", JSON.stringify(user))
       this.setState({ verify: true })
+      // window.location.href = '/home'
+      // navi
       // ...
     }).catch((error) => {
       alert("Login failed.Please try again.")
@@ -84,6 +86,7 @@ class LoginPage extends Component {
 
   }
   render() {
+    console.log("inside verify22", this.state.verify)
     return (
       <div style={{ backgroundImage: 'url(https://assets.nflxext.com/ffe/siteui/vlv3/df6621a3-890c-4ca0-b698-90bd5152f3d1/20a59be7-7062-4991-bca0-805e9a7f2716/IN-en-20240107-trifectadaily-perspective_alpha_website_small.jpg)', backgroundRepeat: "no-repeat", height: '100vh' }}>
         <HeaderLogin currMovie={this.setMovie}></HeaderLogin>

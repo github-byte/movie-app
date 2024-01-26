@@ -20,7 +20,7 @@ class Favourite extends Component {
 
   async componentDidMount() {
     await axios
-      .get(`${LOCAL_API_URL}/fav/`)
+      .get(`${LOCAL_API_URL}fav/`)
 
       .then((response) => {
         console.log("res: ", response.data);
@@ -97,7 +97,7 @@ class Favourite extends Component {
           </div>
 
           {this.state.loader ? (
-            <div style={{ left: "10%", position: "relative" }}>
+            <div style={{ marginLeft: '9vw', position: "relative" }}>
               <SkeletonTheme baseColor="#202020" highlightColor="#444">
                 <p>
                   <Skeleton
