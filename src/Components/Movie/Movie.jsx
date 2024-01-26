@@ -77,7 +77,7 @@ class Movie extends Component {
           </Link>
         </div>
         <div className="movie-info">
-          <div className="movie-title">{title}</div>
+          <div className="movie-title">{title.slice(0,20) + '...'}</div>
           <div className="movie-rating">{vote_average} IMDB</div>
         </div>
       </div>

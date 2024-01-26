@@ -1,6 +1,7 @@
-import axios from "axios";
 import React, { Component } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
+import { Alert } from "reactstrap";
 import { API_KEY, API_URL, IMAGE_URL, LOCAL_API_URL } from "../../API/secrets";
 import Header from "../Header/Header";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
@@ -15,8 +16,15 @@ class Favourite extends Component {
     movieTitle: [],
     name: "",
     type: "",
+    isDeleted: false,
     loader: true,
   };
+
+  componentDidUpdate(){
+    setTimeout(() => {
+      this.setState({isDeleted: false})
+    },5000)
+  }
 
   async componentDidMount() {
     await axios
@@ -79,11 +87,11 @@ class Favourite extends Component {
 
     await axios
       .delete(`${LOCAL_API_URL}fav/` + mainId)
-      .then((res) => console.log(res))
+      .then((res) => this.setState({ isDeleted: true }))
       .catch((err) => console.log(err));
-    let arr = this.state.movieInfo.filter((movie) => {
-      if (movie.id !== id) return true;
-    });
+    let arr = this.state.movieInfo.filter(
+      (movie) => Number(movie.id) !== Number(id)
+    );
     this.setState({ movieInfo: arr });
   };
 
@@ -97,7 +105,7 @@ class Favourite extends Component {
           </div>
 
           {this.state.loader ? (
-            <div style={{ marginLeft: '9vw', position: "relative" }}>
+            <div style={{ marginLeft: "9vw", position: "relative" }}>
               <SkeletonTheme baseColor="#202020" highlightColor="#444">
                 <p>
                   <Skeleton
@@ -146,6 +154,11 @@ class Favourite extends Component {
                 );
               })}
             </div>
+          )}
+          {this.state.isDeleted && (
+            <Alert color="danger">
+              Deleted!
+            </Alert>
           )}
         </div>
       </>

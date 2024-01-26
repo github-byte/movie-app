@@ -73,7 +73,7 @@ class LoginPage extends Component {
       // User signed in successfully.
       const user = result.user;
       console.log('MyUser', JSON.stringify(user));
-
+      
       localStorage.setItem("user", JSON.stringify(user))
       this.setState({ verify: true })
       // window.location.href = '/home'
