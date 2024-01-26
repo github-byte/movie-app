@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { API_KEY, API_URL, IMAGE_URL } from "../../API/secrets";
+import { API_KEY, API_URL, IMAGE_URL, LOCAL_API_URL } from "../../API/secrets";
 import Header from "../Header/Header";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -20,7 +20,7 @@ class Favourite extends Component {
 
   async componentDidMount() {
     await axios
-      .get("http://localhost:4000/fav/")
+      .get(`${LOCAL_API_URL}/fav/`)
 
       .then((response) => {
         console.log("res: ", response.data);
@@ -78,7 +78,7 @@ class Favourite extends Component {
     });
 
     await axios
-      .delete("http://localhost:4000/fav/" + mainId)
+      .delete(`${LOCAL_API_URL}fav/` + mainId)
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
     let arr = this.state.movieInfo.filter((movie) => {

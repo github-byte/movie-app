@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./Header.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { LOCAL_API_URL } from "../../API/secrets";
 
 class Header extends Component {
   state = {
@@ -15,7 +16,7 @@ class Header extends Component {
   async componentDidMount() {
     this.setState({ showInput: this.props.showSearch })
     await axios
-      .get("http://localhost:4000/search/")
+      .get(`${LOCAL_API_URL}search/`)
       .then((res) => this.setState({ dbMovie: res.data }))
       .catch((err) => console.log(err));
   }
@@ -29,7 +30,7 @@ class Header extends Component {
       console.log("inside new moview", this.props.currMovieState)
       this.props.handleMovie(this.state.newMovie)
       await axios
-        .post("http://localhost:4000/search/add", this.state.newMovie)
+        .post(`${LOCAL_API_URL}search/add`, this.state.newMovie)
         .then((res) => console.log("my res33", res))
         .catch((err) => console.log(err));
     }

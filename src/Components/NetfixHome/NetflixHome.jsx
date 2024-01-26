@@ -7,7 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Carousel from "react-multi-carousel";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 
-import { API_KEY, API_URL, IMAGE_URL } from "../../API/secrets";
+import { API_KEY, API_URL, IMAGE_URL, LOCAL_API_URL } from "../../API/secrets";
 import Header from "../Header/Header";
 import YouTube from "react-youtube";
 import "./NetflixHome.css";
@@ -74,7 +74,7 @@ class NetflixHome extends Component {
 
   async componentDidMount() {
     await axios
-      .get("http://localhost:4000/fav")
+      .get(`${LOCAL_API_URL}fav`)
       .then((response) => this.setState({ dbId: response.data }))
       .catch((err) => console.log(err));
     //https://api.themoviedb.org/3/movie/latest?api_key=d8af0c11dd67d6349c48da4ffc70b8b0&language=en-US
@@ -201,7 +201,7 @@ class NetflixHome extends Component {
       this.state.watchlist &&
         (
           await axios
-            .post("http://localhost:4000/fav/add", obj)
+            .post(`${LOCAL_API_URL}fav/add`, obj)
             .then((data) => {
               console.log("inside added state", data);
               const { data: res = [] } = data || {};
@@ -218,7 +218,7 @@ class NetflixHome extends Component {
         }
       });
       await axios
-        .delete("http://localhost:4000/fav/" + id)
+        .delete(`${LOCAL_API_URL}fav/` + id)
         .then((res) => console.log(res))
         .catch((err) => console.log(err));
       let arr = this.state.dbId.filter((movie) => {
